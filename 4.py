@@ -1,37 +1,31 @@
-class BankAccount:
-    def __init__(self, owner, initial_balance):
-        self.owner = owner
-        self._currency = "UAH"  
-        if initial_balance < 0: raise ValueError("Баланс не може бути від'ємним")
-        self.__balance = initial_balance 
+from abc import ABC, abstractmethod
 
+class Logger(ABC):
+    @abstractmethod
+    def log(self, message): pass
+    
     @property
-    def balance(self):
-        return self.__balance
+    @abstractmethod
+    def status(self): pass
 
-    @balance.setter
-    def balance(self, value):
-        if not isinstance(value, (int, float)):
-            raise TypeError("Сума має бути числом")
-        if value < 0:
-            raise ValueError("Сума не може бути від'ємною")
-        self.__balance = value
-
+class ConsoleLogger(Logger):
+    def log(self, message): print(f"[LOG]: {message}")
     @property
-    def info(self):  
-        return f"Рахунок {self.owner}: {self.__balance} {self._currency}"
+    def status(self): return "Active"
 
-acc = BankAccount("Олексій", 1000)
-print(acc.info)
+class Order:
+    def __init__(self, item, price, logger: Logger):
+        self.item = item
+        self.price = price
+        self.logger = logger
+
+    def process(self):
+        self.logger.log(f"Обробка замовлення {self.item} на суму {self.price}")
 
 try:
-    acc.balance = -500
-except ValueError as e:
-    print(f"Валідація спрацювала: {e}")
+    Logger()
+except TypeError:
+    print("Неможливо створити екземпляр абстрактного класу!")
 
-try:
-    print(acc.__balance)
-except AttributeError:
-    print("Прямий доступ до __balance заборонено!")
-
-print(f"Доступ через Name Mangling: {acc._BankAccount__balance}")
+order = Order("Laptop", 25000, ConsoleLogger())
+order.process()
