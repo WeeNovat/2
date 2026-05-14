@@ -1,37 +1,25 @@
-class BankAccount:
-    def __init__(self, owner, initial_balance):
-        self.owner = owner
-        self._currency = "UAH"  
-        if initial_balance < 0: raise ValueError("Баланс не може бути від'ємним")
-        self.__balance = initial_balance 
+class Vector:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
 
-    @property
-    def balance(self):
-        return self.__balance
+    def __repr__(self): return f"Vector({self.x}, {self.y})"
+    def __str__(self): return f"({self.x}; {self.y})"
 
-    @balance.setter
-    def balance(self, value):
-        if not isinstance(value, (int, float)):
-            raise TypeError("Сума має бути числом")
-        if value < 0:
-            raise ValueError("Сума не може бути від'ємною")
-        self.__balance = value
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
 
-    @property
-    def info(self):  
-        return f"Рахунок {self.owner}: {self.__balance} {self._currency}"
+    def __mul__(self, scalar):
+        return Vector(self.x * scalar, self.y * scalar)
 
-acc = BankAccount("Олексій", 1000)
-print(acc.info)
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 
-try:
-    acc.balance = -500
-except ValueError as e:
-    print(f"Валідація спрацювала: {e}")
+    def __abs__(self):
+        return (self.x**2 + self.y**2)**0.5
 
-try:
-    print(acc.__balance)
-except AttributeError:
-    print("Прямий доступ до __balance заборонено!")
-
-print(f"Доступ через Name Mangling: {acc._BankAccount__balance}")
+v1 = Vector(3, 4)
+v2 = Vector(1, 2)
+print(f"Додавання v1 + v2: {v1 + v2}")
+print(f"Множення v1 * 2: {v1 * 2}")
+print(f"Довжина (abs): {abs(v1)}")
+print(f"Порівняння: {v1 == v2}")
