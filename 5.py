@@ -1,32 +1,31 @@
-students = [
-    (1, "Йолкін", [85, 90, 78]),
-    (2, "Шевченко", [92, 88, 95]),
-    (3, "Бусько", [40, 25, 1])
-]
+class DeliveryStrategy(ABC):
+    @abstractmethod
+    def calculate_cost(self, weight): pass
 
-def get_student_info(record):
+class GroundDelivery(DeliveryStrategy):
+    def calculate_cost(self, weight): return weight * 5
 
-    sid, surname, grades = record
-    return f"Студент: {surname}, ID: {sid}"
+class AirDelivery(DeliveryStrategy):
+    def calculate_cost(self, weight): return weight * 50
 
-def calculate_average(data):
-    all_grades = []
-    for _, _, grades in data:
-        all_grades.extend(grades)
-    avg = sum(all_grades) / len(all_grades)
-    return round(avg, 2)
+class Courier:
+    def __init__(self, strategy: DeliveryStrategy):
+        self.strategy = strategy
 
-print("--- Звіт по студентах ---")
-for s in students:
-    print(get_student_info(s))
+    def set_strategy(self, strategy: DeliveryStrategy):
+        self.strategy = strategy
 
-print(f"\nЗагальний середній бал: {calculate_average(students)} балів")
+    def deliver(self, weight):
+        cost = self.strategy.calculate_cost(weight)
+        print(f"Вартість доставки вагою {weight}кг: {cost} грн")
 
-print("\nСпроба змінити кортеж:")
-try:
-    students[0][0] = 99
-except TypeError as e:
-    print(f"Помилка: {e} (Кортеж незмінний!)")
 
-students[0][2].append(100)
-print(f"Але список оцінок змінити можна: {students[0]}")
+delivery = Courier(GroundDelivery())
+delivery.deliver(10)
+
+
+class DroneDelivery(DeliveryStrategy):
+    def calculate_cost(self, weight): return weight * 100
+
+delivery.set_strategy(DroneDelivery())
+delivery.deliver(10)
